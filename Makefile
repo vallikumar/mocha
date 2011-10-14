@@ -1,6 +1,8 @@
 
 TESTS = test/unit/*.js
 REPORTER = list
+mocha.js:
+	@node support/compile | cat support/head.js - support/foot.js > $@
 
 test: test-unit
 

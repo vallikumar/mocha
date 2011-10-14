@@ -13,4 +13,18 @@
   , "dependencies":{
     "commander": "0.1.0"
   }
+  , "scripts": [
+      "support/events.js"
+    , "lib/interfaces/bdd.js"
+    , "lib/interfaces/exports.js"
+    , "lib/interfaces/index.js"
+    , "lib/interfaces/tdd.js"
+    , "lib/mocha.js"
+    , "lib/reporters/base.js"
+    , "lib/reporters/json.js"
+    , "lib/runner.js"
+    , "lib/suite.js"
+    , "lib/test.js"    
+  ]
+  
 }
