@@ -3,4 +3,4 @@
 --ui bdd
 --growl
 --globals okGlobalA,okGlobalB
---timeout 200
+--timeout 1s
