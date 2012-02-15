@@ -99,6 +99,8 @@ tm:
 	cp -fr editors/$(TM_BUNDLE) $(TM_DEST)/$(TM_BUNDLE)
 
 docs: $(HTML)
+	@mkdir -p docs
+	@mv $(HTML) docs
 
 docclean:
 	rm -f $(HTML)
