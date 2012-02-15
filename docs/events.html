@@ -1,0 +1,111 @@
+<html><head><title>Mocha - API documentation</title><link rel="stylesheet" href="style.css"/><script src="jquery.js"></script><script src="docs.js"></script></head><body><div id="content"><h1>Mocha</h1><div id="exports.EventEmitter" class="comment"><h2>exports.EventEmitter</h2><div class="description"><p>Module exports.</p></div><h3>Source</h3><pre><code>exports.EventEmitter = EventEmitter;</code></pre></div><div id="isArray" class="comment"><h2>isArray()</h2><div class="description"><p>Check if <code>obj</code> is an array.</p></div><h3>Source</h3><pre><code>function isArray(obj) {
+  return '[object Array]' == {}.toString.call(obj);
+}</code></pre></div><div id="EventEmitter" class="comment"><h2>EventEmitter()</h2><div class="description"><p>Event emitter constructor.</p></div><h3>Source</h3><pre><code>function EventEmitter(){};</code></pre></div><div id="EventEmitter.prototype.on" class="comment"><h2>EventEmitter#on()</h2><div class="description"><p>Adds a listener.</p></div><h3>Source</h3><pre><code>EventEmitter.prototype.on = function (name, fn) {
+  if (!this.$events) {
+    this.$events = {};
+  }
+
+  if (!this.$events[name]) {
+    this.$events[name] = fn;
+  } else if (isArray(this.$events[name])) {
+    this.$events[name].push(fn);
+  } else {
+    this.$events[name] = [this.$events[name], fn];
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.addListener = EventEmitter.prototype.on;</code></pre></div><div id="EventEmitter.prototype.once" class="comment"><h2>EventEmitter#once()</h2><div class="description"><p>Adds a volatile listener.</p></div><h3>Source</h3><pre><code>EventEmitter.prototype.once = function (name, fn) {
+  var self = this;
+
+  function on () {
+    self.removeListener(name, on);
+    fn.apply(this, arguments);
+  };
+
+  on.listener = fn;
+  this.on(name, on);
+
+  return this;
+};</code></pre></div><div id="EventEmitter.prototype.removeListener" class="comment"><h2>EventEmitter#removeListener()</h2><div class="description"><p>Removes a listener.</p></div><h3>Source</h3><pre><code>EventEmitter.prototype.removeListener = function (name, fn) {
+  if (this.$events && this.$events[name]) {
+    var list = this.$events[name];
+
+    if (isArray(list)) {
+      var pos = -1;
+
+      for (var i = 0, l = list.length; i < l; i++) {
+        if (list[i] === fn || (list[i].listener && list[i].listener === fn)) {
+          pos = i;
+          break;
+        }
+      }
+
+      if (pos < 0) {
+        return this;
+      }
+
+      list.splice(pos, 1);
+
+      if (!list.length) {
+        delete this.$events[name];
+      }
+    } else if (list === fn || (list.listener && list.listener === fn)) {
+      delete this.$events[name];
+    }
+  }
+
+  return this;
+};</code></pre></div><div id="EventEmitter.prototype.removeAllListeners" class="comment"><h2>EventEmitter#removeAllListeners()</h2><div class="description"><p>Removes all listeners for an event.</p></div><h3>Source</h3><pre><code>EventEmitter.prototype.removeAllListeners = function (name) {
+  if (name === undefined) {
+    this.$events = {};
+    return this;
+  }
+
+  if (this.$events && this.$events[name]) {
+    this.$events[name] = null;
+  }
+
+  return this;
+};</code></pre></div><div id="EventEmitter.prototype.listeners" class="comment"><h2>EventEmitter#listeners()</h2><div class="description"><p>Gets all listeners for a certain event.</p></div><h3>Source</h3><pre><code>EventEmitter.prototype.listeners = function (name) {
+  if (!this.$events) {
+    this.$events = {};
+  }
+
+  if (!this.$events[name]) {
+    this.$events[name] = [];
+  }
+
+  if (!isArray(this.$events[name])) {
+    this.$events[name] = [this.$events[name]];
+  }
+
+  return this.$events[name];
+};</code></pre></div><div id="EventEmitter.prototype.emit" class="comment"><h2>EventEmitter#emit()</h2><div class="description"><p>Emits an event.</p></div><h3>Source</h3><pre><code>EventEmitter.prototype.emit = function (name) {
+  if (!this.$events) {
+    return false;
+  }
+
+  var handler = this.$events[name];
+
+  if (!handler) {
+    return false;
+  }
+
+  var args = [].slice.call(arguments, 1);
+
+  if ('function' == typeof handler) {
+    handler.apply(this, args);
+  } else if (isArray(handler)) {
+    var listeners = handler.slice();
+
+    for (var i = 0, l = listeners.length; i < l; i++) {
+      listeners[i].apply(this, args);
+    }
+  } else {
+    return false;
+  }
+
+  return true;
+};</code></pre></div></div><ul id="menu"><li><a href="#exports.EventEmitter">exports.EventEmitter</a></li><li><a href="#isArray">isArray()</a></li><li><a href="#EventEmitter">EventEmitter()</a></li><li><a href="#EventEmitter.prototype.on">EventEmitter#on()</a></li><li><a href="#EventEmitter.prototype.once">EventEmitter#once()</a></li><li><a href="#EventEmitter.prototype.removeListener">EventEmitter#removeListener()</a></li><li><a href="#EventEmitter.prototype.removeAllListeners">EventEmitter#removeAllListeners()</a></li><li><a href="#EventEmitter.prototype.listeners">EventEmitter#listeners()</a></li><li><a href="#EventEmitter.prototype.emit">EventEmitter#emit()</a></li></ul></body></html>

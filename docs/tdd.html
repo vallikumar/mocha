@@ -1,0 +1,42 @@
+<html><head><title>Mocha - API documentation</title><link rel="stylesheet" href="style.css"/><script src="jquery.js"></script><script src="docs.js"></script></head><body><div id="content"><h1>Mocha</h1><div id="module.exports" class="comment"><h2>module.exports()</h2><div class="description"><p>TDD-style interface:</p>
+
+<pre><code> suite('Array', function(){
+   suite('#indexOf()', function(){
+     suiteSetup(function(){
+
+     });
+
+     test('should return -1 when not present', function(){
+
+     });
+
+     test('should return the index when present', function(){
+
+     });
+
+     suiteTeardown(function(){
+
+     });
+   });
+ });
+</code></pre></div><h3>Source</h3><pre><code>module.exports = function(suite){
+  var suites = [suite];
+
+  suite.on('pre-require', function(context){</code></pre></div><div id="context.setup" class="comment"><h2>context.setup()</h2><div class="description"><p>Execute before each test case.</p></div><h3>Source</h3><pre><code>context.setup = function(fn){
+      suites[0].beforeEach(fn);
+    };</code></pre></div><div id="context.teardown" class="comment"><h2>context.teardown()</h2><div class="description"><p>Execute after each test case.</p></div><h3>Source</h3><pre><code>context.teardown = function(fn){
+      suites[0].afterEach(fn);
+    };</code></pre></div><div id="context.suiteSetup" class="comment"><h2>context.suiteSetup()</h2><div class="description"><p>Execute before the suite.</p></div><h3>Source</h3><pre><code>context.suiteSetup = function(fn){
+      suites[0].beforeAll(fn);
+    };</code></pre></div><div id="context.suiteTeardown" class="comment"><h2>context.suiteTeardown()</h2><div class="description"><p>Execute after the suite.</p></div><h3>Source</h3><pre><code>context.suiteTeardown = function(fn){
+      suites[0].afterAll(fn);
+    };</code></pre></div><div id="context.suite" class="comment"><h2>context.suite()</h2><div class="description"><p>Describe a "suite" with the given <code>title</code><br />and callback <code>fn</code> containing nested suites<br />and/or tests.</p></div><h3>Source</h3><pre><code>context.suite = function(title, fn){
+      var suite = Suite.create(suites[0], title);
+      suites.unshift(suite);
+      fn();
+      suites.shift();
+    };</code></pre></div><div id="context.test" class="comment"><h2>context.test()</h2><div class="description"><p>Describe a specification or test-case<br />with the given <code>title</code> and callback <code>fn</code><br />acting as a thunk.</p></div><h3>Source</h3><pre><code>context.test = function(title, fn){
+      suites[0].addTest(new Test(title, fn));
+    };
+  });
+};</code></pre></div></div><ul id="menu"><li><a href="#module.exports">module.exports()</a></li><li><a href="#context.setup">context.setup()</a></li><li><a href="#context.teardown">context.teardown()</a></li><li><a href="#context.suiteSetup">context.suiteSetup()</a></li><li><a href="#context.suiteTeardown">context.suiteTeardown()</a></li><li><a href="#context.suite">context.suite()</a></li><li><a href="#context.test">context.test()</a></li></ul></body></html>

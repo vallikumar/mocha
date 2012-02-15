@@ -1,0 +1,23 @@
+<html><head><title>Mocha - API documentation</title><link rel="stylesheet" href="style.css"/><script src="jquery.js"></script><script src="docs.js"></script></head><body><div id="content"><h1>Mocha</h1><div id="List" class="comment"><h2>List()</h2><div class="description"><p>Initialize a new <code>List</code> test reporter.</p></div><h3>Source</h3><pre><code>function List(runner) {
+  Base.call(this, runner);
+
+  var self = this
+    , stats = this.stats
+    , total = runner.total;
+
+  runner.on('start', function(){
+    console.log(JSON.stringify(['start', { total: total }]));
+  });
+
+  runner.on('pass', function(test){
+    console.log(JSON.stringify(['pass', clean(test)]));
+  });
+
+  runner.on('fail', function(test, err){
+    console.log(JSON.stringify(['fail', clean(test)]));
+  });
+
+  runner.on('end', function(){
+    process.stdout.write(JSON.stringify(['end', self.stats]));
+  });
+}</code></pre></div></div><ul id="menu"><li><a href="#List">List()</a></li></ul></body></html>

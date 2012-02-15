@@ -1,0 +1,30 @@
+<html><head><title>Mocha - API documentation</title><link rel="stylesheet" href="style.css"/><script src="jquery.js"></script><script src="docs.js"></script></head><body><div id="content"><h1>Mocha</h1><div id="Teamcity" class="comment"><h2>Teamcity()</h2><div class="description"><p>Initialize a new <code>Teamcity</code> reporter.</p></div><h3>Source</h3><pre><code>function Teamcity(runner) {
+  Base.call(this, runner);
+  var stats = this.stats;
+
+  runner.on('start', function() {
+    console.log("##teamcity[testSuiteStarted name='mocha.suite']");
+  });
+
+  runner.on('test', function(test) {
+    console.log("##teamcity[testStarted name='%s']", escape(test.fullTitle()));
+  });
+
+  runner.on('fail', function(test, err) {
+    console.log("##teamcity[testFailed name='%s' message='%s']", escape(test.fullTitle()), escape(err.message));
+  });
+
+  runner.on('pending', function(test) {
+    console.log("##teamcity[testIgnored name='%s' message='pending']", escape(test.fullTitle()));
+  });
+
+  runner.on('test end', function(test) {
+    console.log("##teamcity[testFinished name='%s' duration='%s']", escape(test.fullTitle()), test.duration);
+  });
+
+  runner.on('end', function() {
+    console.log("##teamcity[testSuiteFinished name='mocha.suite' duration='%s']", stats.duration);
+  });
+}</code></pre></div><div id="escape" class="comment"><h2>escape()</h2><div class="description"><p>Escape the given <code>str</code>.</p></div><h3>Source</h3><pre><code>function escape(str) {
+  return str.replace(/'/g, "|'");
+}</code></pre></div></div><ul id="menu"><li><a href="#Teamcity">Teamcity()</a></li><li><a href="#escape">escape()</a></li></ul></body></html>

@@ -1,0 +1,39 @@
+<html><head><title>Mocha - API documentation</title><link rel="stylesheet" href="style.css"/><script src="jquery.js"></script><script src="docs.js"></script></head><body><div id="content"><h1>Mocha</h1><div id="module.exports" class="comment"><h2>module.exports()</h2><div class="description"><p>BDD-style interface:</p>
+
+<pre><code> describe('Array', function(){
+   describe('#indexOf()', function(){
+     it('should return -1 when not present', function(){
+
+     });
+
+     it('should return the index when present', function(){
+
+     });
+   });
+ });
+</code></pre></div><h3>Source</h3><pre><code>module.exports = function(suite){
+  var suites = [suite];
+
+  suite.on('pre-require', function(context){
+
+    // noop variants
+
+    context.xdescribe = function(){};
+    context.xit = function(){};</code></pre></div><div id="context.before" class="comment"><h2>context.before()</h2><div class="description"><p>Execute before running tests.</p></div><h3>Source</h3><pre><code>context.before = function(fn){
+      suites[0].beforeAll(fn);
+    };</code></pre></div><div id="context.after" class="comment"><h2>context.after()</h2><div class="description"><p>Execute after running tests.</p></div><h3>Source</h3><pre><code>context.after = function(fn){
+      suites[0].afterAll(fn);
+    };</code></pre></div><div id="context.beforeEach" class="comment"><h2>context.beforeEach()</h2><div class="description"><p>Execute before each test case.</p></div><h3>Source</h3><pre><code>context.beforeEach = function(fn){
+      suites[0].beforeEach(fn);
+    };</code></pre></div><div id="context.afterEach" class="comment"><h2>context.afterEach()</h2><div class="description"><p>Execute after each test case.</p></div><h3>Source</h3><pre><code>context.afterEach = function(fn){
+      suites[0].afterEach(fn);
+    };</code></pre></div><div id="context.describe" class="comment"><h2>context.describe()</h2><div class="description"><p>Describe a "suite" with the given <code>title</code><br />and callback <code>fn</code> containing nested suites<br />and/or tests.</p></div><h3>Source</h3><pre><code>context.describe = function(title, fn){
+      var suite = Suite.create(suites[0], title);
+      suites.unshift(suite);
+      fn();
+      suites.shift();
+    };</code></pre></div><div id="context.it" class="comment"><h2>context.it()</h2><div class="description"><p>Describe a specification or test-case<br />with the given <code>title</code> and callback <code>fn</code><br />acting as a thunk.</p></div><h3>Source</h3><pre><code>context.it = function(title, fn){
+      suites[0].addTest(new Test(title, fn));
+    };
+  });
+};</code></pre></div></div><ul id="menu"><li><a href="#module.exports">module.exports()</a></li><li><a href="#context.before">context.before()</a></li><li><a href="#context.after">context.after()</a></li><li><a href="#context.beforeEach">context.beforeEach()</a></li><li><a href="#context.afterEach">context.afterEach()</a></li><li><a href="#context.describe">context.describe()</a></li><li><a href="#context.it">context.it()</a></li></ul></body></html>

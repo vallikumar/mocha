@@ -1,0 +1,55 @@
+<html><head><title>Mocha - API documentation</title><link rel="stylesheet" href="style.css"/><script src="jquery.js"></script><script src="docs.js"></script></head><body><div id="content"><h1>Mocha</h1><div id="XUnit" class="comment"><h2>XUnit()</h2><div class="description"><p>Initialize a new <code>XUnit</code> reporter.</p></div><h3>Source</h3><pre><code>function XUnit(runner) {
+  Base.call(this, runner);
+  var stats = this.stats
+    , tests = []
+    , self = this;
+
+  runner.on('test end', function(test){
+    tests.push(test);
+  });
+
+  runner.on('end', function(){
+    console.log(tag('testsuite', {
+        name: 'Mocha Tests'
+      , tests: stats.tests
+      , failures: stats.failures
+      , errors: stats.failures
+      , skip: stats.tests - stats.failures - stats.passes
+      , timestamp: (new Date).toUTCString()
+      , time: stats.duration / 1000
+    }, false));
+
+    tests.forEach(test);
+    console.log('</testsuite>');    
+  });
+}</code></pre></div><div id="test" class="comment"><h2>test()</h2><div class="description"><p>Output tag for the given <code>test.</code></p></div><h3>Source</h3><pre><code>function test(test) {
+  var attrs = {
+      classname: test.parent.fullTitle()
+    , name: test.title
+    , time: test.duration / 1000
+  };
+
+  if ('failed' == test.state) {
+    var err = test.err;
+    attrs.message = escape(err.message);
+    console.log(tag('testcase', attrs, false, tag('failure', attrs, false, cdata(err.stack))));
+  } else if (test.pending) {
+    console.log(tag('testcase', attrs, false, tag('skipped', {}, true)));
+  } else {
+    console.log(tag('testcase', attrs, true) );
+  }
+}</code></pre></div><div id="tag" class="comment"><h2>tag()</h2><div class="description"><p>HTML tag helper.</p></div><h3>Source</h3><pre><code>function tag(name, attrs, close, content) {
+  var end = close ? '/>' : '>'
+    , pairs = []
+    , tag;
+
+  for (var key in attrs) {
+    pairs.push(key + '="' + escape(attrs[key]) + '"');
+  }
+
+  tag = '<' + name + (pairs.length ? ' ' + pairs.join(' ') : '') + end;
+  if (content) tag += content + '</' + name + end;
+  return tag;
+}</code></pre></div><div id="cdata" class="comment"><h2>cdata()</h2><div class="description"><p>Return cdata escaped CDATA <code>str</code>.</p></div><h3>Source</h3><pre><code>function cdata(str) {
+  return '<![CDATA[' + escape(str) + ']]>';
+}</code></pre></div></div><ul id="menu"><li><a href="#XUnit">XUnit()</a></li><li><a href="#test">test()</a></li><li><a href="#tag">tag()</a></li><li><a href="#cdata">cdata()</a></li></ul></body></html>

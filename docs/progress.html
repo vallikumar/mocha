@@ -1,0 +1,50 @@
+<html><head><title>Mocha - API documentation</title><link rel="stylesheet" href="style.css"/><script src="jquery.js"></script><script src="docs.js"></script></head><body><div id="content"><h1>Mocha</h1><div id="Progress" class="comment"><h2>Progress()</h2><div class="description"><p>Initialize a new <code>Progress</code> bar test reporter.</p></div><h3>Source</h3><pre><code>function Progress(runner, options) {
+  Base.call(this, runner);
+
+  var self = this
+    , options = options || {}
+    , stats = this.stats
+    , width = Base.window.width * .50 | 0
+    , total = runner.total
+    , complete = 0
+    , max = Math.max;
+
+  // default chars
+  options.open = options.open || '[';
+  options.complete = options.complete || '▬';
+  options.incomplete = options.incomplete || '⋅';
+  options.close = options.close || ']';
+  options.verbose = false;
+
+  // tests started
+  runner.on('start', function(){
+    console.log();
+    cursor.hide();
+  });
+
+  // tests complete
+  runner.on('test end', function(){
+    var incomplete = total - complete
+      , percent = complete++ / total
+      , n = width * percent | 0
+      , i = width - n;
+
+    cursor.CR();
+    process.stdout.write('\033[J');
+    process.stdout.write(color('progress', '  ' + options.open));
+    process.stdout.write(Array(n).join(options.complete));
+    process.stdout.write(Array(i).join(options.incomplete));
+    process.stdout.write(color('progress', options.close));
+    if (options.verbose) {
+      process.stdout.write(color('progress', ' ' + complete + ' of ' + total));
+    }
+  });
+
+  // tests are complete, output some stats
+  // and the failures if any
+  runner.on('end', function(){
+    cursor.show();
+    console.log();
+    self.epilogue();
+  });
+}</code></pre></div></div><ul id="menu"><li><a href="#Progress">Progress()</a></li></ul></body></html>

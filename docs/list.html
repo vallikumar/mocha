@@ -1,0 +1,36 @@
+<html><head><title>Mocha - API documentation</title><link rel="stylesheet" href="style.css"/><script src="jquery.js"></script><script src="docs.js"></script></head><body><div id="content"><h1>Mocha</h1><div id="List" class="comment"><h2>List()</h2><div class="description"><p>Initialize a new <code>List</code> test reporter.</p></div><h3>Source</h3><pre><code>function List(runner) {
+  Base.call(this, runner);
+
+  var self = this
+    , stats = this.stats
+    , n = 0;
+
+  runner.on('start', function(){
+    console.log();
+  });
+
+  runner.on('test', function(test){
+    process.stdout.write(color('pass', '    ' + test.fullTitle() + ': '));
+  });
+
+  runner.on('pending', function(test){
+    var fmt = color('checkmark', '  -')
+      + color('pending', ' %s');
+    console.log(fmt, test.fullTitle());
+  });
+
+  runner.on('pass', function(test){
+    var fmt = color('checkmark', '  ✓')
+      + color('pass', ' %s: ')
+      + color(test.speed, '%dms');
+    cursor.CR();
+    console.log(fmt, test.fullTitle(), test.duration);
+  });
+
+  runner.on('fail', function(test, err){
+    cursor.CR();
+    console.log(color('fail', '  %d) %s'), ++n, test.fullTitle());
+  });
+
+  runner.on('end', self.epilogue.bind(self));
+}</code></pre></div></div><ul id="menu"><li><a href="#List">List()</a></li></ul></body></html>

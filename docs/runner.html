@@ -1,0 +1,63 @@
+<html><head><title>Mocha - API documentation</title><link rel="stylesheet" href="style.css"/><script src="jquery.js"></script><script src="docs.js"></script></head><body><div id="content"><h1>Mocha</h1><div id="module.exports" class="comment"><h2>module.exports</h2><div class="description"><p>Expose <code>Runner</code>.</p></div><h3>Source</h3><pre><code>module.exports = Runner;</code></pre></div><div id="Runner" class="comment"><h2>Runner()</h2><div class="description"><p>Initialize a <code>Runner</code> for the given <code>suite</code>.</p>
+
+<h2>Events</h2>
+
+<ul>
+<li><code>start</code>  execution started</li>
+<li><code>end</code>  execution complete</li>
+<li><code>suite</code>  (suite) test suite execution started</li>
+<li><code>suite end</code>  (suite) all tests (and sub-suites) have finished</li>
+<li><code>test</code>  (test) test execution started</li>
+<li><code>test end</code>  (test) test completed</li>
+<li><code>hook</code>  (hook) hook execution started</li>
+<li><code>hook end</code>  (hook) hook complete</li>
+<li><code>pass</code>  (test) test passed</li>
+<li><code>fail</code>  (test, err) test failed</li>
+</ul></div><h3>Source</h3><pre><code>function Runner(suite) {
+  var self = this;
+  this._globals = [];
+  this.suite = suite;
+  this.total = suite.total();
+  this.failures = 0;
+  this.on('test end', function(test){ self.checkGlobals(test); });
+  this.on('hook end', function(hook){ self.checkGlobals(hook); });
+  this.grep(/.*/);
+  this.globals(utils.keys(global).concat(['errno']));
+}</code></pre></div><div id="Runner.prototype.grep" class="comment"><h2>Runner#grep()</h2><div class="description"><p>Run tests with full titles matching <code>re</code>.</p></div><h3>Source</h3><pre><code>Runner.prototype.grep = function(re){
+  debug('grep %s', re);
+  this._grep = re;
+  return this;
+};</code></pre></div><div id="Runner.prototype.globals" class="comment"><h2>Runner#globals()</h2><div class="description"><p>Allow the given <code>arr</code> of globals.</p></div><h3>Source</h3><pre><code>Runner.prototype.globals = function(arr){
+  if (0 == arguments.length) return this._globals;
+  debug('globals %j', arr);
+  utils.forEach(arr, function(arr){
+    this._globals.push(arr);
+  }, this);
+  return this;
+};</code></pre></div><div id="Runner.prototype.run" class="comment"><h2>Runner#run()</h2><div class="description"><p>Run the root suite and invoke <code>fn(failures)</code><br />on completion.</p></div><h3>Source</h3><pre><code>Runner.prototype.run = function(fn){
+  var self = this
+    , fn = fn || function(){};
+
+  debug('start');
+
+  // callback
+  this.on('end', function(){
+    debug('end');
+    process.removeListener('uncaughtException', this.uncaught);
+    fn(self.failures);
+  });
+
+  // run suites
+  this.emit('start');
+  this.runSuite(this.suite, function(){
+    debug('finished running');
+    self.emit('end');
+  });
+
+  // uncaught exception
+  process.on('uncaughtException', function(err){
+    self.uncaught(err);
+  });
+
+  return this;
+};</code></pre></div></div><ul id="menu"><li><a href="#module.exports">module.exports</a></li><li><a href="#Runner">Runner()</a></li><li><a href="#Runner.prototype.grep">Runner#grep()</a></li><li><a href="#Runner.prototype.globals">Runner#globals()</a></li><li><a href="#Runner.prototype.run">Runner#run()</a></li></ul></body></html>
