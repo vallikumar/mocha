@@ -17,6 +17,7 @@
     , "debug": "*"
   }
   , "devDependencies": {
-    "should": "*"
+      "should": "*"
+    , "dox": "*"
   }
 }
