@@ -20,4 +20,10 @@
   runner.on('end', function(){
     process.stdout.write(JSON.stringify(['end', self.stats]));
   });
-}</code></pre></div></div><ul id="menu"><li><a href="#List">List()</a></li></ul></body></html>
+}</code></pre></div><div id="clean" class="comment"><h2>clean()</h2><div class="description"><p>Return a plain-object representation of <code>test</code><br />free of cyclic properties etc.</p></div><h3>Source</h3><pre><code>function clean(test) {
+  return {
+      title: test.title
+    , fullTitle: test.fullTitle()
+    , duration: test.duration
+  }
+}</code></pre></div></div><ul id="menu"><li><a href="#List">List()</a></li><li><a href="#clean">clean()</a></li></ul></body></html>

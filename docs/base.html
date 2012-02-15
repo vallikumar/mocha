@@ -15,6 +15,9 @@
   , 'slow': 31
   , 'green': 32
   , 'light': 90
+};</code></pre></div><div id="color" class="comment"><h2>color</h2><div class="description"><p>Color <code>str</code> with the given <code>type</code>,<br />allowing colors to be disabled,<br />as well as user-defined color<br />schemes.</p></div><h3>Source</h3><pre><code>var color = exports.color = function(type, str) {
+  if (!exports.useColors) return str;
+  return '\033[' + exports.colors[type] + 'm' + str + '\033[0m';
 };</code></pre></div><div id="exports.window" class="comment"><h2>exports.window</h2><div class="description"><p>Expose term window size, with some<br />defaults for when stderr is not a tty.</p></div><h3>Source</h3><pre><code>exports.window = {
   width: isatty
     ? process.stdout.getWindowSize
@@ -136,4 +139,4 @@
 
   console.log(fmt, stats.tests || 0, stats.duration);
   console.log();
-};</code></pre></div></div><ul id="menu"><li><a href="#isatty">isatty</a></li><li><a href="#exports.useColors">exports.useColors</a></li><li><a href="#exports.colors">exports.colors</a></li><li><a href="#exports.window">exports.window</a></li><li><a href="#exports.cursor">exports.cursor</a></li><li><a href="#exports.slow">exports.slow</a></li><li><a href="#exports.list">exports.list()</a></li><li><a href="#Base">Base()</a></li><li><a href="#Base.prototype.epilogue">Base#epilogue()</a></li></ul></body></html>
+};</code></pre></div></div><ul id="menu"><li><a href="#isatty">isatty</a></li><li><a href="#exports.useColors">exports.useColors</a></li><li><a href="#exports.colors">exports.colors</a></li><li><a href="#color">color</a></li><li><a href="#exports.window">exports.window</a></li><li><a href="#exports.cursor">exports.cursor</a></li><li><a href="#exports.slow">exports.slow</a></li><li><a href="#exports.list">exports.list()</a></li><li><a href="#Base">Base()</a></li><li><a href="#Base.prototype.epilogue">Base#epilogue()</a></li></ul></body></html>

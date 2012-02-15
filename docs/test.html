@@ -1,1 +1,13 @@
-<!DOCTYPE html><html><head><title>Mocha - API documentation</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><link rel="stylesheet" href="style.css"><script src="jquery.js"></script><script src="docs.js"></script></head><body><div id="content"><h1>Mocha</h1><div id="module.exports" class="comment"><h2>module.exports</h2><div class="description"><p>Expose <code>Test</code>.</p></div><h3>Source</h3><pre><code>module.exports = Test;</code></pre></div></div><ul id="menu"><li><a href="#module.exports">module.exports</a></li></ul></body></html>
+<!DOCTYPE html><html><head><title>Mocha - API documentation</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><link rel="stylesheet" href="style.css"><script src="jquery.js"></script><script src="docs.js"></script></head><body><div id="content"><h1>Mocha</h1><div id="module.exports" class="comment"><h2>module.exports</h2><div class="description"><p>Expose <code>Test</code>.</p></div><h3>Source</h3><pre><code>module.exports = Test;</code></pre></div><div id="Test" class="comment"><h2>Test()</h2><div class="description"><p>Initialize a new <code>Test</code> with the given <code>title</code> and callback <code>fn</code>.</p></div><h3>Source</h3><pre><code>function Test(title, fn) {
+  Runnable.call(this, title, fn);
+  this.pending = !fn;
+  this.type = 'test';
+}</code></pre></div><div id="Test.prototype.inspect" class="comment"><h2>Test#inspect()</h2><div class="description"><p>Inspect the context void of private properties.</p></div><h3>Source</h3><pre><code>Test.prototype.inspect = function(){
+  return JSON.stringify(this, function(key, val){
+    return '_' == key[0]
+      ? undefined
+      : 'parent' == key
+        ? '#<Suite>'
+        : val;
+  }, 2);
+};</code></pre></div></div><ul id="menu"><li><a href="#module.exports">module.exports</a></li><li><a href="#Test">Test()</a></li><li><a href="#Test.prototype.inspect">Test#inspect()</a></li></ul></body></html>

@@ -34,6 +34,195 @@
     this._globals.push(arr);
   }, this);
   return this;
+};</code></pre></div><div id="Runner.prototype.checkGlobals" class="comment"><h2>Runner#checkGlobals()</h2><div class="description"><p>Check for global variable leaks.</p></div><h3>Source</h3><pre><code>Runner.prototype.checkGlobals = function(test){
+  if (this.ignoreLeaks) return;
+
+  var leaks = utils.filter(utils.keys(global), function(key){
+    return !~utils.indexOf(this._globals, key) && (!global.navigator || 'onerror' !== key);
+  }, this);
+
+  this._globals = this._globals.concat(leaks);
+
+  if (leaks.length > 1) {
+    this.fail(test, new Error('global leaks detected: ' + leaks.join(', ') + ''));
+  } else if (leaks.length) {
+    this.fail(test, new Error('global leak detected: ' + leaks[0]));
+  }
+};</code></pre></div><div id="Runner.prototype.fail" class="comment"><h2>Runner#fail()</h2><div class="description"><p>Fail the given <code>test</code>.</p></div><h3>Source</h3><pre><code>Runner.prototype.fail = function(test, err){
+  ++this.failures;
+  test.state = 'failed';
+  this.emit('fail', test, err);
+};</code></pre></div><div id="Runner.prototype.failHook" class="comment"><h2>Runner#failHook()</h2><div class="description"><p>Fail the given <code>hook</code> with <code>err</code>.</p>
+
+<p>Hook failures (currently) hard-end due<br />to that fact that a failing hook will<br />surely cause subsequent tests to fail,<br />causing jumbled reporting.</p></div><h3>Source</h3><pre><code>Runner.prototype.failHook = function(hook, err){
+  this.fail(hook, err);
+  this.emit('end');
+};</code></pre></div><div id="Runner.prototype.hook" class="comment"><h2>Runner#hook()</h2><div class="description"><p>Run hook <code>name</code> callbacks and then invoke <code>fn()</code>.</p></div><h3>Source</h3><pre><code>Runner.prototype.hook = function(name, fn){
+  var suite = this.suite
+    , hooks = suite['_' + name]
+    , ms = suite._timeout
+    , self = this
+    , timer;
+
+  function next(i) {
+    var hook = hooks[i];
+    if (!hook) return fn();
+    self.currentRunnable = hook;
+    hook.ctx.test(self.test);
+
+    self.emit('hook', hook);
+
+    hook.on('error', function(err){
+      self.failHook(hook, err);
+    });
+
+    hook.run(function(err){
+      hook.removeAllListeners('error');
+      if (err) return self.failHook(hook, err);
+      self.emit('hook end', hook);
+      next(++i);
+    });
+  }
+
+  process.nextTick(function(){
+    next(0);
+  });
+};</code></pre></div><div id="Runner.prototype.hooks" class="comment"><h2>Runner#hooks()</h2><div class="description"><p>Run hook <code>name</code> for the given array of <code>suites</code><br />in order, and callback <code>fn(err)</code>.</p></div><h3>Source</h3><pre><code>Runner.prototype.hooks = function(name, suites, fn){
+  var self = this
+    , orig = this.suite;
+
+  function next(suite) {
+    self.suite = suite;
+
+    if (!suite) {
+      self.suite = orig;
+      return fn();
+    }
+
+    self.hook(name, function(err){
+      if (err) {
+        self.suite = orig;
+        return fn(err);
+      }
+
+      next(suites.pop());
+    });
+  }
+
+  next(suites.pop());
+};</code></pre></div><div id="Runner.prototype.hookUp" class="comment"><h2>Runner#hookUp()</h2><div class="description"><p>Run hooks from the top level down.</p></div><h3>Source</h3><pre><code>Runner.prototype.hookUp = function(name, fn){
+  var suites = [this.suite].concat(this.parents()).reverse();
+  this.hooks(name, suites, fn);
+};</code></pre></div><div id="Runner.prototype.hookDown" class="comment"><h2>Runner#hookDown()</h2><div class="description"><p>Run hooks from the bottom up.</p></div><h3>Source</h3><pre><code>Runner.prototype.hookDown = function(name, fn){
+  var suites = [this.suite].concat(this.parents());
+  this.hooks(name, suites, fn);
+};</code></pre></div><div id="Runner.prototype.parents" class="comment"><h2>Runner#parents()</h2><div class="description"><p>Return an array of parent Suites from<br />closest to furthest.</p></div><h3>Source</h3><pre><code>Runner.prototype.parents = function(){
+  var suite = this.suite
+    , suites = [];
+  while (suite = suite.parent) suites.push(suite);
+  return suites;
+};</code></pre></div><div id="Runner.prototype.runTest" class="comment"><h2>Runner#runTest()</h2><div class="description"><p>Run the current test and callback <code>fn(err)</code>.</p></div><h3>Source</h3><pre><code>Runner.prototype.runTest = function(fn){
+  var test = this.test
+    , self = this;
+
+  try {
+    test.ctx.test(test);
+    test.on('error', function(err){
+      self.fail(test, err);
+    });
+    test.run(fn);
+  } catch (err) {
+    fn(err);
+  }
+};</code></pre></div><div id="Runner.prototype.runTests" class="comment"><h2>Runner#runTests()</h2><div class="description"><p>Run tests in the given <code>suite</code> and invoke<br />the callback <code>fn()</code> when complete.</p></div><h3>Source</h3><pre><code>Runner.prototype.runTests = function(suite, fn){
+  var self = this
+    , tests = suite.tests
+    , test;
+
+  function next(err) {
+    // if we bail after first err
+    if (self.failures && suite._bail) return fn();
+
+    // next test
+    test = tests.shift();
+
+    // all done
+    if (!test) return fn();
+
+    // grep
+    if (!self._grep.test(test.fullTitle())) return next();
+
+    // pending
+    if (test.pending) {
+      self.emit('pending', test);
+      self.emit('test end', test);
+      return next();
+    }
+
+    // execute test and hook(s)
+    self.emit('test', self.test = test);
+    self.hookDown('beforeEach', function(){
+      self.currentRunnable = self.test;
+      self.runTest(function(err){
+        test = self.test;
+
+        if (err) {
+          self.fail(test, err);
+          self.emit('test end', test);
+          return self.hookUp('afterEach', next);
+        }
+
+        test.state = 'passed';
+        self.emit('pass', test);
+        self.emit('test end', test);
+        self.hookUp('afterEach', next);
+      });
+    });
+  }
+
+  this.next = next;
+  next();
+};</code></pre></div><div id="Runner.prototype.runSuite" class="comment"><h2>Runner#runSuite()</h2><div class="description"><p>Run the given <code>suite</code> and invoke the<br />callback <code>fn()</code> when complete.</p></div><h3>Source</h3><pre><code>Runner.prototype.runSuite = function(suite, fn){
+  var self = this
+    , i = 0;
+
+  debug('run suite %s', suite.fullTitle());
+  this.emit('suite', this.suite = suite);
+
+  function next() {
+    var curr = suite.suites[i++];
+    if (!curr) return done();
+    self.runSuite(curr, next);
+  }
+
+  function done() {
+    self.suite = suite;
+    self.hook('afterAll', function(){
+      self.emit('suite end', suite);
+      fn();
+    });
+  }
+
+  this.hook('beforeAll', function(){
+    self.runTests(suite, next);
+  });
+};</code></pre></div><div id="Runner.prototype.uncaught" class="comment"><h2>Runner#uncaught()</h2><div class="description"><p>Handle uncaught exceptions.</p></div><h3>Source</h3><pre><code>Runner.prototype.uncaught = function(err){
+  debug('uncaught exception');
+  var runnable = this.currentRunnable;
+  if ('failed' == runnable.state) return;
+  runnable.clearTimeout();
+  err.uncaught = true;
+  this.fail(runnable, err);
+
+  // recover from test
+  if ('test' == runnable.type) {
+    this.emit('test end', runnable);
+    this.hookUp('afterEach', this.next);
+    return;
+  }
+
+  // bail on hooks
+  this.emit('end');
 };</code></pre></div><div id="Runner.prototype.run" class="comment"><h2>Runner#run()</h2><div class="description"><p>Run the root suite and invoke <code>fn(failures)</code><br />on completion.</p></div><h3>Source</h3><pre><code>Runner.prototype.run = function(fn){
   var self = this
     , fn = fn || function(){};
@@ -60,4 +249,4 @@
   });
 
   return this;
-};</code></pre></div></div><ul id="menu"><li><a href="#module.exports">module.exports</a></li><li><a href="#Runner">Runner()</a></li><li><a href="#Runner.prototype.grep">Runner#grep()</a></li><li><a href="#Runner.prototype.globals">Runner#globals()</a></li><li><a href="#Runner.prototype.run">Runner#run()</a></li></ul></body></html>
+};</code></pre></div></div><ul id="menu"><li><a href="#module.exports">module.exports</a></li><li><a href="#Runner">Runner()</a></li><li><a href="#Runner.prototype.grep">Runner#grep()</a></li><li><a href="#Runner.prototype.globals">Runner#globals()</a></li><li><a href="#Runner.prototype.checkGlobals">Runner#checkGlobals()</a></li><li><a href="#Runner.prototype.fail">Runner#fail()</a></li><li><a href="#Runner.prototype.failHook">Runner#failHook()</a></li><li><a href="#Runner.prototype.hook">Runner#hook()</a></li><li><a href="#Runner.prototype.hooks">Runner#hooks()</a></li><li><a href="#Runner.prototype.hookUp">Runner#hookUp()</a></li><li><a href="#Runner.prototype.hookDown">Runner#hookDown()</a></li><li><a href="#Runner.prototype.parents">Runner#parents()</a></li><li><a href="#Runner.prototype.runTest">Runner#runTest()</a></li><li><a href="#Runner.prototype.runTests">Runner#runTests()</a></li><li><a href="#Runner.prototype.runSuite">Runner#runSuite()</a></li><li><a href="#Runner.prototype.uncaught">Runner#uncaught()</a></li><li><a href="#Runner.prototype.run">Runner#run()</a></li></ul></body></html>

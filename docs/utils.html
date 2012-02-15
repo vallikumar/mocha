@@ -1,3 +1,70 @@
-<!DOCTYPE html><html><head><title>Mocha - API documentation</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><link rel="stylesheet" href="style.css"><script src="jquery.js"></script><script src="docs.js"></script></head><body><div id="content"><h1>Mocha</h1><div id="ignore" class="comment"><h2>ignore</h2><div class="description"><p>Ignored directories.</p></div><h3>Source</h3><pre><code>var ignore = ['node_modules', '.git'];</code></pre></div><div id="ignored" class="comment"><h2>ignored()</h2><div class="description"><p>Ignored files.</p></div><h3>Source</h3><pre><code>function ignored(path){
+<!DOCTYPE html><html><head><title>Mocha - API documentation</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><link rel="stylesheet" href="style.css"><script src="jquery.js"></script><script src="docs.js"></script></head><body><div id="content"><h1>Mocha</h1><div id="ignore" class="comment"><h2>ignore</h2><div class="description"><p>Ignored directories.</p></div><h3>Source</h3><pre><code>var ignore = ['node_modules', '.git'];</code></pre></div><div id="exports.escape" class="comment"><h2>exports.escape()</h2><div class="description"><p>Escape special characters in the given string of html.</p></div><h3>Source</h3><pre><code>exports.escape = function(html) {
+  return String(html)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+};</code></pre></div><div id="exports.forEach" class="comment"><h2>exports.forEach()</h2><div class="description"><p>Array#forEach (&lt;=IE8)</p></div><h3>Source</h3><pre><code>exports.forEach = function(arr, fn, scope) {
+  for (var i = 0, l = arr.length; i < l; i++)
+    fn.call(scope, arr[i], i);
+};</code></pre></div><div id="exports.indexOf" class="comment"><h2>exports.indexOf()</h2><div class="description"><p>Array#indexOf (&lt;=IE8)</p></div><h3>Source</h3><pre><code>exports.indexOf = function (arr, obj, start) {
+  for (var i = start || 0, l = arr.length; i < l; i++) {
+    if (arr[i] === obj)
+      return i;
+  }
+  return -1;
+};</code></pre></div><div id="exports.reduce" class="comment"><h2>exports.reduce()</h2><div class="description"><p>Array#reduce (&lt;=IE8)</p></div><h3>Source</h3><pre><code>exports.reduce = function(arr, fn, val, scope) {
+  var rval = val;
+
+  for (var i = 0, l = arr.length; i < l; i++) {
+    rval = fn.call(scope, rval, arr[i], i, arr);
+  }
+
+  return rval;
+};</code></pre></div><div id="exports.filter" class="comment"><h2>exports.filter()</h2><div class="description"><p>Array#filter (&lt;=IE8)</p></div><h3>Source</h3><pre><code>exports.filter = function(arr, fn, scope) {
+  var ret = [];
+
+  for (var i = 0, l = arr.length; i < l; i++) {
+    var val = arr[i];
+    if (fn.call(scope, val, i, arr))
+      ret.push(val);
+  }
+
+  return ret;
+};</code></pre></div><div id="exports.keys" class="comment"><h2>exports.keys</h2><div class="description"><p>Object.keys (&lt;=IE8)</p></div><h3>Source</h3><pre><code>exports.keys = Object.keys || function(obj) {
+  var keys = []
+    , has = Object.prototype.hasOwnProperty // for `window` on <=IE8
+
+  for (var key in obj) {
+    if (has.call(obj, key)) {
+      keys.push(key);
+    }
+  }
+
+  return keys;
+};</code></pre></div><div id="exports.watch" class="comment"><h2>exports.watch()</h2><div class="description"><p>Watch the given <code>files</code> for changes<br />and invoke <code>fn(file)</code> on modification.</p></div><h3>Source</h3><pre><code>exports.watch = function(files, fn){
+  var options = { interval: 100 };
+  files.forEach(function(file){
+    debug('file %s', file);
+    fs.watchFile(file, options, function(curr, prev){
+      if (prev.mtime < curr.mtime) fn(file);
+    });
+  });
+};</code></pre></div><div id="ignored" class="comment"><h2>ignored()</h2><div class="description"><p>Ignored files.</p></div><h3>Source</h3><pre><code>function ignored(path){
   return !~ignore.indexOf(path);
-}</code></pre></div></div><ul id="menu"><li><a href="#ignore">ignore</a></li><li><a href="#ignored">ignored()</a></li></ul></body></html>
+}</code></pre></div><div id="exports.files" class="comment"><h2>exports.files()</h2><div class="description"><p>Lookup files in the given <code>dir</code>.</p></div><h3>Source</h3><pre><code>exports.files = function(dir, ret){
+  ret = ret || [];
+
+  fs.readdirSync(dir)
+  .filter(ignored)
+  .forEach(function(path){
+    path = join(dir, path);
+    if (fs.statSync(path).isDirectory()) {
+      exports.files(path, ret);
+    } else if (path.match(/\.(js|coffee)$/)) {
+      ret.push(path);
+    }
+  });
+
+  return ret;
+};</code></pre></div></div><ul id="menu"><li><a href="#ignore">ignore</a></li><li><a href="#exports.escape">exports.escape()</a></li><li><a href="#exports.forEach">exports.forEach()</a></li><li><a href="#exports.indexOf">exports.indexOf()</a></li><li><a href="#exports.reduce">exports.reduce()</a></li><li><a href="#exports.filter">exports.filter()</a></li><li><a href="#exports.keys">exports.keys</a></li><li><a href="#exports.watch">exports.watch()</a></li><li><a href="#ignored">ignored()</a></li><li><a href="#exports.files">exports.files()</a></li></ul></body></html>

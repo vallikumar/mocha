@@ -1,1 +1,13 @@
-<!DOCTYPE html><html><head><title>Mocha - API documentation</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><link rel="stylesheet" href="style.css"><script src="jquery.js"></script><script src="docs.js"></script></head><body><div id="content"><h1>Mocha</h1><div id="module.exports" class="comment"><h2>module.exports</h2><div class="description"><p>Expose <code>Context</code>.</p></div><h3>Source</h3><pre><code>module.exports = Context;</code></pre></div></div><ul id="menu"><li><a href="#module.exports">module.exports</a></li></ul></body></html>
+<!DOCTYPE html><html><head><title>Mocha - API documentation</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><link rel="stylesheet" href="style.css"><script src="jquery.js"></script><script src="docs.js"></script></head><body><div id="content"><h1>Mocha</h1><div id="module.exports" class="comment"><h2>module.exports</h2><div class="description"><p>Expose <code>Context</code>.</p></div><h3>Source</h3><pre><code>module.exports = Context;</code></pre></div><div id="Context" class="comment"><h2>Context()</h2><div class="description"><p>Initialize a new <code>Context</code>.</p></div><h3>Source</h3><pre><code>function Context(){}</code></pre></div><div id="Context.prototype.test" class="comment"><h2>Context#test()</h2><div class="description"><p>Set the context <code>Test</code> to <code>test</code>.</p></div><h3>Source</h3><pre><code>Context.prototype.test = function(test){
+  this._test = test;
+  return this;
+};</code></pre></div><div id="Context.prototype.timeout" class="comment"><h2>Context#timeout()</h2><div class="description"><p>Set test timeout <code>ms</code>.</p></div><h3>Source</h3><pre><code>Context.prototype.timeout = function(ms){
+  this._test.timeout(ms);
+  return this;
+};</code></pre></div><div id="Context.prototype.inspect" class="comment"><h2>Context#inspect()</h2><div class="description"><p>Inspect the context void of <code>._test</code>.</p></div><h3>Source</h3><pre><code>Context.prototype.inspect = function(){
+  return JSON.stringify(this, function(key, val){
+    return '_test' == key
+      ? undefined
+      : val;
+  }, 2);
+};</code></pre></div></div><ul id="menu"><li><a href="#module.exports">module.exports</a></li><li><a href="#Context">Context()</a></li><li><a href="#Context.prototype.test">Context#test()</a></li><li><a href="#Context.prototype.timeout">Context#timeout()</a></li><li><a href="#Context.prototype.inspect">Context#inspect()</a></li></ul></body></html>

@@ -26,4 +26,6 @@
     console.log('not ok %d %s', n, title(test));
     console.log(err.stack.replace(/^/gm, '  '));
   });
-}</code></pre></div></div><ul id="menu"><li><a href="#TAP">TAP()</a></li></ul></body></html>
+}</code></pre></div><div id="title" class="comment"><h2>title()</h2><div class="description"><p>Return a TAP-safe title of <code>test</code></p></div><h3>Source</h3><pre><code>function title(test) {
+  return test.fullTitle().replace(/#/g, '');
+}</code></pre></div></div><ul id="menu"><li><a href="#TAP">TAP()</a></li><li><a href="#title">title()</a></li></ul></body></html>
