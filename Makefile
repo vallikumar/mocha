@@ -104,6 +104,6 @@ docclean:
 	rm -f $(HTML)
 
 %.html: %.js
-	dox < $< > $@
+	dox < $< | node support/docs > $@
 
 .PHONY: docs docclean watch test test-all test-bdd test-tdd test-qunit test-exports test-unit non-tty test-grep tm clean
