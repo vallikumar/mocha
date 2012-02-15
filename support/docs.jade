@@ -11,9 +11,9 @@ html
           - continue
 
         .comment(id=id(comment))
-          h1= title(comment)
+          h2= title(comment)
           .description!= comment.description.full
-          h2 Source
+          h3 Source
           pre
             code!= comment.code
     
