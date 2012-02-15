@@ -2,8 +2,10 @@
 REPORTER = dot
 TM_DEST = ~/Library/Application\ Support/TextMate/Bundles
 TM_BUNDLE = JavaScript\ mocha.tmbundle
-SRC = $(shell find lib -name "*.js" -type f)
 SUPPORT = $(wildcard support/*.js)
+
+SRC = $(shell find lib -name "*.js" -type f)
+HTML = $(SRC:.js=.html)
 
 all: mocha.js mocha.css
 
@@ -96,4 +98,12 @@ tm:
 	mkdir -p $(TM_DEST)/$(TM_BUNDLE)
 	cp -fr editors/$(TM_BUNDLE) $(TM_DEST)/$(TM_BUNDLE)
 
-.PHONY: watch test test-all test-bdd test-tdd test-qunit test-exports test-unit non-tty test-grep tm clean
+docs: $(HTML)
+
+docclean:
+	rm -f $(HTML)
+
+%.html: %.js
+	dox < $< > $@
+
+.PHONY: docs docclean watch test test-all test-bdd test-tdd test-qunit test-exports test-unit non-tty test-grep tm clean
