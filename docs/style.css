@@ -36,6 +36,7 @@ pre {
   border: 1px solid #eee;
   padding: 15px;
   border-radius: 5px;
+  font: 13px Monaco, monospace;
 }
 
 #menu {
