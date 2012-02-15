@@ -9,19 +9,16 @@ html
       h1 Mocha
 
       for comment in comments
-        if ignore(comment)
-          - continue
-
-        .comment(id=id(comment))
-          h2= title(comment)
-          .description!= comment.description.full
-          h3 Source
-          pre
-            code!= comment.code
+        unless ignore(comment)
+          .comment(id=id(comment))
+            h2= title(comment)
+            .description!= comment.description.full
+            h3 Source
+            pre
+              code!= comment.code
     
     ul#menu
       for comment in comments
-        if ignore(comment)
-          - continue
-        li
-          a(href='#' + id(comment))= title(comment)
+        unless ignore(comment)
+          li
+            a(href='#' + id(comment))= title(comment)
